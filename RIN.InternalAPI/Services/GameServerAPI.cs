@@ -1,4 +1,6 @@
-﻿using RIN.Core.DB;
+﻿using Grpc.Core;
+using Npgsql;
+using RIN.Core.DB;
 using RIN.InternalAPI.Models;
 
 namespace RIN.InternalAPI.Services
@@ -38,6 +40,26 @@ namespace RIN.InternalAPI.Services
             };
 
             return resp;
+        }
+
+        public async Task Listen(EmptyReq req, IServerStreamWriter<Event> responseStream, ServerCallContext context)
+        {
+            await using var connection = new NpgsqlConnection(DB.ConnStr);
+            await connection.OpenAsync();
+
+            await using var cmd = new NpgsqlCommand("LISTEN events", connection);
+            await cmd.ExecuteNonQueryAsync();
+
+            connection.Notification += async (_, e) =>
+            {
+                var evt = e.Payload.Split(':');
+                await responseStream.WriteAsync(new Event { Type = evt[0], Payload = evt[1] });
+            };
+
+            while (!context.CancellationToken.IsCancellationRequested)
+            {
+                await connection.WaitAsync(context.CancellationToken);
+            }
         }
     }
 }

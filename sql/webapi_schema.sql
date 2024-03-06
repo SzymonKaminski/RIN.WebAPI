@@ -412,6 +412,69 @@ COMMENT ON FUNCTION webapi.create_entity_guid("Type" integer) IS 'Create an enti
 Based on https://gist.github.com/SilentCLD/881839a9f45578f1618db012fc789a71 ';
 
 
+--
+-- Name: notify_on_army_events(); Type: FUNCTION; Schema: webapi; Owner: tmwadmin
+--
+
+CREATE FUNCTION webapi.notify_on_army_events() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF TG_OP = 'UPDATE' THEN
+        PERFORM pg_notify('events', 'army_info_change:' || NEW.army_guid);
+    END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION webapi.notify_on_army_events() OWNER TO tmwadmin;
+
+--
+-- Name: notify_on_army_member_events(); Type: FUNCTION; Schema: webapi; Owner: tmwadmin
+--
+
+CREATE FUNCTION webapi.notify_on_army_member_events() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    isOfficer int;
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        SELECT CASE WHEN is_officer THEN 1 ELSE 0 END
+        INTO isOfficer
+        FROM webapi."ArmyRanks"
+        WHERE army_rank_id = NEW.army_rank_id;
+
+        PERFORM pg_notify('events', 'army_id_changed:' || NEW.army_guid || ';' || NEW.character_guid || ';' || isOfficer);
+    ELSIF TG_OP = 'DELETE' THEN
+        PERFORM pg_notify('events', 'army_id_changed:0;' || OLD.character_guid || ';0');
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION webapi.notify_on_army_member_events() OWNER TO tmwadmin;
+
+--
+-- Name: notify_on_character_events(); Type: FUNCTION; Schema: webapi; Owner: tmwadmin
+--
+
+CREATE FUNCTION webapi.notify_on_character_events() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF OLD.gender != NEW.gender OR OLD.race != NEW.race OR OLD.visuals != NEW.visuals THEN
+        PERFORM pg_notify('events', 'character_visuals_updated:' || NEW.character_guid::text);
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION webapi.notify_on_character_events() OWNER TO tmwadmin;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -1161,6 +1224,27 @@ CREATE UNIQUE INDEX purchases_purchase_id_uindex ON webapi."Purchases" USING btr
 --
 
 CREATE UNIQUE INDEX vip_data_account_id_uindex ON webapi."VipData" USING btree (account_id);
+
+
+--
+-- Name: Armies army_events_trigger; Type: TRIGGER; Schema: webapi; Owner: tmwadmin
+--
+
+CREATE TRIGGER army_events_trigger AFTER UPDATE ON webapi."Armies" FOR EACH ROW EXECUTE FUNCTION webapi.notify_on_army_events();
+
+
+--
+-- Name: ArmyMembers army_member_events_trigger; Type: TRIGGER; Schema: webapi; Owner: tmwadmin
+--
+
+CREATE TRIGGER army_member_events_trigger AFTER INSERT OR DELETE OR UPDATE ON webapi."ArmyMembers" FOR EACH ROW EXECUTE FUNCTION webapi.notify_on_army_member_events();
+
+
+--
+-- Name: Characters character_events_trigger; Type: TRIGGER; Schema: webapi; Owner: tmwadmin
+--
+
+CREATE TRIGGER character_events_trigger AFTER UPDATE ON webapi."Characters" FOR EACH ROW EXECUTE FUNCTION webapi.notify_on_character_events();
 
 
 --

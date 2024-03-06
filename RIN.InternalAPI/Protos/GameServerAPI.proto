@@ -10,6 +10,8 @@ message BasicCharacterInfo {
    int64 CurrentBattleframeId = 5;
    uint32 CurrentBattleframeSDBId = 6;
    string ArmyTag = 7;
+   uint64 ArmyGUID = 8;
+   bool ArmyIsOfficer = 9;
 }
 message CharacterAndBattleframeVisuals {
    BasicCharacterInfo CharacterInfo = 1;
@@ -37,6 +39,12 @@ message CharacterVisuals {
    WebIdValueColorId facial_hair = 15;
    WebId glider = 16;
    WebId vehicle = 17;
+}
+message EmptyReq {
+}
+message Event {
+   string Type = 1;
+   string Payload = 2;
 }
 message PingReq {
    .google.protobuf.Timestamp SentTime = 1;
@@ -78,5 +86,6 @@ message WebIdValueColorId {
 }
 service GameServerAPI {
    rpc GetCharacterAndBattleframeVisuals (CharacterID) returns (CharacterAndBattleframeVisuals);
+   rpc Listen (EmptyReq) returns (stream Event);
    rpc Ping (PingReq) returns (PingResp);
 }
