@@ -76,7 +76,36 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseSerilogRequestLogging();
+if (app.Environment.IsDevelopment())
+{
+    app.UseMiddleware<StoreRequestBodyMiddleware>();
+    app.UseSerilogRequestLogging(options =>
+        {
+            options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+            {
+                diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
+                diagnosticContext.Set("Body", "");
+                var headers = string.Join("; ", httpContext.Request.Headers.Select(h => $"{h.Key}: {h.Value}"));
+                diagnosticContext.Set("Headers", "\n" + headers);
+
+                var body = httpContext.Items["RequestBody"] as string;
+
+                if (!string.IsNullOrEmpty(body))
+                {
+                    diagnosticContext.Set("Body", "\n" + body);
+                }
+            };
+
+            // Optionally {Headers}
+            options.MessageTemplate =
+                "HTTP {RequestMethod} {RequestPath}{QueryString} responded {StatusCode} in {Elapsed:0.0000} ms{Body}";
+        }
+    );
+}
+else
+{
+    app.UseSerilogRequestLogging();
+}
 
 app.MapControllers();
 
