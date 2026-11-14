@@ -1,5 +1,4 @@
-﻿using System.Web;
-using FauFau.Net.Web;
+﻿using FauFau.Net.Web;
 using Microsoft.AspNetCore.Mvc;
 using RIN.Core;
 using RIN.WebAPI.Models.ClientApi;
@@ -17,8 +16,7 @@ namespace RIN.WebAPI.Controllers
 
             //Logger.LogInformation($"Headers: {GetHeadersDev()}");
 
-            var uid = HttpUtility.UrlDecode(GetRed5Sig().UID.ToString());
-            var loginResult = await Db.GetLoginData(uid);
+            var loginResult = await Db.GetLoginData(GetUid());
 
             // Email not found
             if (loginResult == null)
@@ -113,8 +111,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return BadRequest("Invalid language code. It should be a 2-character string.");
             }
-            var uid = HttpUtility.UrlDecode(GetRed5Sig().UID.ToString());
-            var loginResult = await Db.GetLoginData(uid);
+            var loginResult = await Db.GetLoginData(GetUid());
 
             long accountID = loginResult.account_id;
             bool success = await Db.UpdateLanguage(accountID, request.language);

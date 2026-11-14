@@ -11,6 +11,8 @@ namespace RIN.Core.DB
 {
     public partial class DB
     {
+        private static Error DbUnreachableError() => new Error(Error.Codes.ERR_UNKNOWN, "Failed to reach the database");
+
         public async Task<long> CreateNewCharacter(long accountId, string name, bool isDev, int voiceSetId, int gender, byte[] visualsBlob, int templateId = 0)
         {
             var result = await DBCall(async conn =>
@@ -221,7 +223,7 @@ namespace RIN.Core.DB
             // Guard it, otherwise the LINQ below throws ArgumentNullException and the route 500s.
             if (char_select_results is null)
             {
-                return new Error() { code = Error.Codes.ERR_UNKNOWN, message = "Failed to reach the database" };
+                return DbUnreachableError();
             }
 
             if (char_select_results.Count() == 0)
@@ -242,7 +244,7 @@ namespace RIN.Core.DB
 
             if (isCommanderResults is null)
             {
-                return new Error() { code = Error.Codes.ERR_UNKNOWN, message = "Failed to reach the database" };
+                return DbUnreachableError();
             }
 
             if (isCommanderResults.Any())
@@ -262,7 +264,7 @@ namespace RIN.Core.DB
 
             if (select_results is null)
             {
-                return new Error() { code = Error.Codes.ERR_UNKNOWN, message = "Failed to reach the database" };
+                return DbUnreachableError();
             }
 
             if (select_results.Count() == 1)
@@ -313,7 +315,7 @@ namespace RIN.Core.DB
 
             if (select_results is null)
             {
-                return new Error() { code = Error.Codes.ERR_UNKNOWN, message = "Failed to reach the database" };
+                return DbUnreachableError();
             }
 
             if (select_results.Count() == 0)

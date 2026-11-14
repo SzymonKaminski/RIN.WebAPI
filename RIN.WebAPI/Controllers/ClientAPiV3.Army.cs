@@ -42,7 +42,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You are already a member of an army.",
+                    ArmyErrorMessages.ALREADY_IN_ARMY,
                     StatusCodes.Status422UnprocessableEntity
                     );
             }
@@ -113,7 +113,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You are not the commander of this army.",
+                    ArmyErrorMessages.NOT_THE_COMMANDER,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -133,7 +133,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You are not the commander of this army.",
+                    ArmyErrorMessages.NOT_THE_COMMANDER,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -153,7 +153,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You are not a member of this army.",
+                    ArmyErrorMessages.NOT_A_MEMBER,
                     StatusCodes.Status422UnprocessableEntity
                 );
             }
@@ -252,7 +252,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You do not have permission to edit ranks for this army.",
+                    ArmyErrorMessages.NO_PERMISSION_EDIT_RANKS,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -276,7 +276,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You do not have permission to edit ranks for this army.",
+                    ArmyErrorMessages.NO_PERMISSION_EDIT_RANKS,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -302,7 +302,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You are not a member of this army.",
+                    ArmyErrorMessages.NOT_A_MEMBER,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -446,7 +446,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You do not have permission to approve applications for this army.",
+                    ArmyErrorMessages.NO_PERMISSION_APPROVE_APPLICATIONS,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -473,7 +473,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You do not have permission to approve applications for this army.",
+                    ArmyErrorMessages.NO_PERMISSION_APPROVE_APPLICATIONS,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -493,7 +493,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You do not have permission to reject applications for this army.",
+                    ArmyErrorMessages.NO_PERMISSION_REJECT_APPLICATIONS,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -520,7 +520,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You do not have permission to reject applications for this army.",
+                    ArmyErrorMessages.NO_PERMISSION_REJECT_APPLICATIONS,
                     StatusCodes.Status403Forbidden
                 );
             }
@@ -569,7 +569,7 @@ namespace RIN.WebAPI.Controllers
             {
                 return ReturnError(
                     Error.Codes.ERR_UNKNOWN,
-                    "You are already a member of an army.",
+                    ArmyErrorMessages.ALREADY_IN_ARMY,
                     StatusCodes.Status422UnprocessableEntity
                 );
             }

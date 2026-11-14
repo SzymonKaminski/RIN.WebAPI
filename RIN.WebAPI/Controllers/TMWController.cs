@@ -2,15 +2,14 @@
 using System.Web;
 using FauFau.Net.Web;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using RIN.Core;
+using RIN.WebAPI.Utils;
 
 namespace RIN.WebAPI.Controllers
 {
     public class TmwController : Controller
     {
-        private const string RED5_SIG1_NAME            = "X-Red5-Signature";
         private const string RED5_SIG2_NAME            = "X-Red5-Signature2";
         private const string RED5_HOT_FIX_LEVEL_NAME   = "X-Red5-Hotfix-Level";
         private const string RED5_SILO_POOL_ID_NAME    = "X-Red5-SiloPoolId";
@@ -18,15 +17,9 @@ namespace RIN.WebAPI.Controllers
         private const string STEAM_USER_ID_NAME        = "X-Steam-Client-UserId";
         private const string STEAM_SESSION_TICKET_NAME = "X-Steam-Session-Ticket";
 
-        protected string GetSingleHeader(string headerName)
-        {
-            var str = Request.Headers.TryGetValue(headerName, out StringValues header)
-                ? header.FirstOrDefault()
-                : null;
-            return str;
-        }
+        protected string GetSingleHeader(string headerName) => Request.GetSingleHeader(headerName);
 
-        protected string           GetRed5Sig1Str()        => GetSingleHeader(RED5_SIG1_NAME);
+        protected string           GetRed5Sig1Str()        => GetSingleHeader(Auth.SIG_HEADER_NAME);
         protected string           GetRed5Sig2Str()        => GetSingleHeader(RED5_SIG2_NAME);
         protected string           GetRed5HotfixLevel()    => GetSingleHeader(RED5_HOT_FIX_LEVEL_NAME);
         protected string           GetRed5SiloPollId()     => GetSingleHeader(RED5_SILO_POOL_ID_NAME);

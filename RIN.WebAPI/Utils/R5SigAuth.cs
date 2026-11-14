@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using RIN.Core;
 using RIN.Core.DB;
 using RIN.WebAPI.Models;
@@ -35,7 +34,7 @@ namespace RIN.WebAPI.Utils
             if (!Config.VerifyRed5Sig)
                 return;
 
-            var header = GetHeader(context.HttpContext.Request);
+            var header = context.HttpContext.Request.GetSingleHeader(Auth.SIG_HEADER_NAME);
             if (header == null)
             {
                 context.Result = CreateError(Error.Codes.ERR_INCORRECT_USERPASS, "No Signature");
@@ -59,7 +58,7 @@ namespace RIN.WebAPI.Utils
         // Checks the token, the body hash and the time of the signature, the body stays readable for the action
         public static async Task<Red5Sig.VerifyResult> VerifyRequest(HttpRequest request, string secret, TimeSpan maxClockSkew)
         {
-            var header = GetHeader(request);
+            var header = request.GetSingleHeader(Auth.SIG_HEADER_NAME);
             if (header == null)
                 return Red5Sig.VerifyResult.Malformed;
 
@@ -69,11 +68,6 @@ namespace RIN.WebAPI.Utils
             request.Body.Position = 0;
 
             return Red5Sig.Verify(secret, header, body.GetBuffer().AsSpan(0, (int)body.Length), DateTimeOffset.UtcNow, maxClockSkew);
-        }
-
-        private static string GetHeader(HttpRequest request)
-        {
-            return request.Headers.TryGetValue(Auth.SIG_HEADER_NAME, out StringValues header) ? header.FirstOrDefault() : null;
         }
 
         private ObjectResult CreateError(string code, string msg = null)

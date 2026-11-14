@@ -17,7 +17,7 @@ namespace RIN.WebAPI.Models.ClientApi
             set => _name = value.Trim();
         }
 
-        [Url(ErrorMessage = "The website is not a valid URL.")]
+        [Url(ErrorMessage = ArmyErrorMessages.INVALID_WEBSITE)]
         public string? website { get; set; }
 
         [StringLength(maximumLength: 2048, MinimumLength = 1,
